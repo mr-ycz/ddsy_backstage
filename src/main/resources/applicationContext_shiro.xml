@@ -1,0 +1,86 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="myRealm" class="com.ycz.realm.MyRealm">
+        <property name="adminService" ref="adminServiceImpl"/>
+        <property name="roleService" ref="roleServiceImpl"/>
+        <property name="permissionService" ref="permissionServiceImpl"/>
+        <!-- 密码比对器 -->
+        <property name="credentialsMatcher">
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                <property name="hashAlgorithmName" value="SHA-256"/>
+                <!-- true means hex encoded, false means base64 encoded -->
+                <property name="storedCredentialsHexEncoded" value="false"/>
+                <property name="hashIterations" value="10000"/>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- remember me -->
+    <!--<bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">-->
+        <!--&lt;!&ndash; rememberMe是cookie值中的key，value时用户名的密文-->
+             <!--cookie["rememberMe":"deleteMe"] 此cookie每次登陆后都会写出，用于清除之前的cookie-->
+             <!--cookie["rememberMe":username的密文] 此cookie也会在登录后写出，用于记录最新的username-->
+            <!--（ops: 如上设计，既能保证每次登陆后重新记录cookie，也能保证切换账号时，记录最新账号）-->
+        <!--&ndash;&gt;-->
+        <!--<property name="name" value="rememberMe"/>-->
+        <!--&lt;!&ndash; cookie只在http请求中可用，那么通过js脚本将无法读取到cookie信息，有效防止cookie被窃取 &ndash;&gt;-->
+        <!--<property name="httpOnly" value="true"/>-->
+        <!--&lt;!&ndash; cookie的生命周期，单位：秒 &ndash;&gt;-->
+        <!--<property name="maxAge" value="604800"/>&lt;!&ndash; 30天 &ndash;&gt;-->
+    <!--</bean>-->
+    <!--<bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">-->
+        <!--&lt;!&ndash; 对cookie的value加密的密钥 建议每个项目都不一样-->
+            <!--加密方式AES(对称加密)-->
+            <!--密钥生成：【KeyGenerator keygen = KeyGenerator.getInstance("AES");-->
+                       <!--SecretKey deskey = keygen.generateKey();-->
+                       <!--System.out.println(Base64.encodeToString(deskey.getEncoded()));】-->
+            <!--SpEL:Spring Expression Language  #{表达式}  #{T(类型)...}-->
+
+        <!--<property name="cipherKey"-->
+                  <!--value="#{T(org.apache.shiro.codec.Base64).decode('c+3hFGPjbgzGdrC+MHgoRQ==')}"/>-->
+        <!--此配置可以省略，CookieRememberMeManager自动完成秘钥生成-->
+        <!--&ndash;&gt;-->
+        <!--&lt;!&ndash; 注入SimpleCookie &ndash;&gt;-->
+        <!--<property name="cookie" ref="rememberMeCookie"/>-->
+    <!--</bean>-->
+
+    <!-- 声明SecurityManager -->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="myRealm"/>
+        <!-- 注册缓存管理器 -->
+        <!--<property name="cacheManager" ref="cacheManager"/>-->
+        <!-- 注册sessionManager,其中会调度SessionDAO，将session存入Redis -->
+        <!--<property name="sessionManager" ref="sessionManager"/>-->
+        <!-- 记住我的有效时间 -->
+        <!--<property name="rememberMeManager" ref="rememberMeManager"/>-->
+    </bean>
+
+    <!-- shiroFilter -->
+    <!-- 生产SpringShiroFilter
+         （ 持有shiro的过滤相关规则，可进行请求的过滤校验，校验请求是否合法 ）
+    -->
+    <bean id="shiroFilter04" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <!-- 注入核心对象 -->
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+
+    <!-- CacheManager声明 -->
+    <!--<bean id="cacheManager" class="com.ycz.cache.MyShiroCacheManager">-->
+    <!--<property name="redisTemplate" ref="redisTemplate"/>-->
+    <!--</bean>-->
+
+    <!-- SessionManager,使用Shiro的DefaultWebSessionManager即可，其中注入自定义的SessionDAO -->
+    <!--<bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">-->
+    <!--&lt;!&ndash; 注册SessionDAO,负责将Session对象存入redis &ndash;&gt;-->
+    <!--<property name="sessionDAO">-->
+    <!--<bean class="com.ycz.sessiondao.MySessionDAO">-->
+    <!--<property name="redisTemplate" ref="redisTemplate2"/>-->
+    <!--</bean>-->
+    <!--</property>-->
+    <!--</bean>-->
+
+</beans>

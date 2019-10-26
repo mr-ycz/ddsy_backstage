@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ycz.dao.GoodsMapper">
+
+    <insert id="insertGoods">
+        insert into t_goods(name,times,picture,price,intro,typeid,banner)
+        values(#{name},#{times},#{picture},#{price},#{intro},#{typeid},#{banner})
+    </insert>
+    <update id="updateGoods">
+        update t_goods set name=#{name},picture=#{picture},price=#{price},intro=#{intro},typeid=#{typeid}
+        where id=#{id}
+    </update>
+    <delete id="deleteGoodsById">
+        delete from t_goods where id=#{gid}
+    </delete>
+
+    <select id="selectAllGoods" resultType="com.ycz.pojo.Goods">
+        select * from t_goods
+    </select>
+    <select id="selectById" resultType="com.ycz.pojo.Goods">
+        select * from t_goods where id=#{id}
+    </select>
+    <select id="selectByTypeid" resultType="com.ycz.pojo.Goods">
+        select * from t_goods where typeid=#{typeid}
+        <if test="on=='go'">
+            order by t_goods.price
+        </if>
+        <if test="on!='go'">
+            order by t_goods.times
+        </if>
+    </select>
+</mapper>
