@@ -15,8 +15,7 @@
 <body>
 <div class="row" style="margin-left: 20px;">
     
-    <form id="goodsform" action="${pageContext.request.contextPath}/admincontroller/updateGoods"
-          method="post" enctype="multipart/form-data">
+    <form id="goodsform" method="post" enctype="multipart/form-data">
         <div>
             <h3>更新商品</h3>
         </div>
@@ -57,7 +56,7 @@
             <div class="col-sm-10">
                 <div class="form-group form-inline">
                     <label>商品图片</label>
-                    <img src="${pageContext.request.contextPath}/image/${goods.picture}" />
+                    <img id="img" src="${pageContext.request.contextPath}/image/${goods.picture}" />
                     <input type="file" name="sources1" />
                 </div>
                 <div class="form-group ">
@@ -66,20 +65,27 @@
                 </div>
 
                 <div class="form-group form-inline">
-                    <input type="submit" value="修改" class="btn btn-primary" />
+                    <input type="button" value="修改" onclick="updategoods()" class="btn btn-primary" />
                     <input type="reset" value="重置" class="btn btn-default" />
                 </div>
             </div>
         </div>
     </form>
 
-    <%--<script type="text/javascript">--%>
-        <%--function updategoods() {--%>
-            <%--$.post("${pageContext.request.contextPath}/admincontroller/updateGoods",$("#goodsform").serialize(),function (data) {--%>
-
-            <%--})--%>
-        <%--}--%>
-    <%--</script>--%>
+    <script type="text/javascript">
+        function updategoods() {
+            $.ajax({type:"post",
+                data:new FormData(document.getElementById("goodsform")),
+                url:"${pageContext.request.contextPath}/admincontroller/updateGoods",
+                success:function(a){
+                    alert(a);
+                    document.getElementById("img").src="${pageContext.request.contextPath}/image/"+a;
+                },
+                processData: false,
+                contentType: false
+            })
+        }
+    </script>
 </div>
 </body>
 </html>

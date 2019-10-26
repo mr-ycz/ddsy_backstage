@@ -97,11 +97,6 @@ public class AdminController {
     @RequestMapping("/updateGoods")
     @ResponseBody
     public String updateGoods(String gid, String name, BigDecimal price, String intro, Integer typeid,  MultipartFile sources1, HttpServletRequest request) throws IOException {
-//        System.out.println("name:"+name);
-//        System.out.println("price:"+price);
-//        System.out.println("intro:"+intro);
-//        System.out.println("typeid:"+typeid);
-//        System.out.println(sources1.getOriginalFilename());
 
         String fileName = UUID.randomUUID().toString();
         String originalFilename = sources1.getOriginalFilename();
@@ -114,15 +109,13 @@ public class AdminController {
 
         String contentType = sources1.getContentType();
         if("image/jpeg".equals(contentType) || "image/png".equals(contentType) || "image/gif".equals(contentType)){
-            String realPath = request.getSession().getServletContext().getRealPath("/image");
-//            System.out.println(realPath + File.separator + uniqueFileName);
+            String realPath = "D:\\ideaprograms\\ddsy_backstage\\src\\main\\webapp\\image";
             sources1.transferTo(new File(realPath+File.separator+uniqueFileName));
             String realFilePath=realPath+File.separator+uniqueFileName;
 
-            Goods goods=new Goods(Integer.parseInt(gid), name, null, realFilePath, price, intro, typeid, null);
+            Goods goods=new Goods(Integer.parseInt(gid), name, null, originalFilename, price, intro, typeid, null);
             goodsService.updateGoods(goods);
-            goods(request);
-            return null;
+            return originalFilename;
         }
         return null;
     }

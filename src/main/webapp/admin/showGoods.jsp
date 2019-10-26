@@ -22,7 +22,7 @@
 	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 		<div class="panel panel-default" style="height: 802px">
 			<div class="panel-heading">
-				会员列表
+				商品列表
 			</div>
 			<div class="panel-body" style="height: 802px">
 				<div class="row">
@@ -54,7 +54,7 @@
 								<td>${goods.price}</td>
 								<td><fmt:formatDate value="${goods.times}" pattern="yyyy-MM-dd"></fmt:formatDate></td>
 
-								<td><img src="${goods.picture}" /></td>
+								<td><img src="${pageContext.request.contextPath}/image/${goods.picture}" /></td>
 
 								<td><a href="#" onclick="delgoods(${goods.id})">删除</a> &nbsp;<a href="#" onclick="upgoods(${goods.id})" >修改</a> &nbsp;
 									<a tabindex="0" id="example${goods.id}" class="btn btn-primary btn-xs"
