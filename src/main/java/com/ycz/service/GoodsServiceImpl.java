@@ -32,4 +32,9 @@ public class GoodsServiceImpl implements GoodsService {
     public void updateGoods(Goods goods) {
         goodsMapper.updateGoods(goods);
     }
+
+    @Override
+    public void addGoods(Goods goods) {
+        goodsMapper.insertGoods(goods);
+    }
 }

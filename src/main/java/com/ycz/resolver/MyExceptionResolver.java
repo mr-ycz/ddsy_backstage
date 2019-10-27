@@ -20,13 +20,17 @@ public class MyExceptionResolver implements HandlerExceptionResolver{
     private Map<Class,String> evMapping=new HashMap();
     private final String DEFAULT_ERROR="error";
     public MyExceptionResolver(){
-        evMapping.put(UnauthenticatedException.class,"redirect:/user/login");
-        evMapping.put(UnauthorizedException.class,"error");
+        evMapping.put(UnauthenticatedException.class,"redirect:/admincontroller/login");
+        evMapping.put(UnauthorizedException.class,"forward:/admin/error.jsp");
         evMapping.put(IncorrectCredentialsException.class,"json:用户名或密码错误~~~~");
         evMapping.put(UnknownAccountException.class,"json:用户名或密码错误~~~~");
     }
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        String iniPath = request.getRequestURI();
+
+        request.getSession().setAttribute("iniPath", iniPath.substring(iniPath.indexOf("/admin")));
+
         ModelAndView mv = new ModelAndView();
         // 开发时必备的
         ex.printStackTrace();

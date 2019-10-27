@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8"%>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -13,8 +14,9 @@
     <title>商品更新页面</title>
 </head>
 <body>
+
 <div class="row" style="margin-left: 20px;">
-    
+
     <form id="goodsform" method="post" enctype="multipart/form-data">
         <div>
             <h3>更新商品</h3>
@@ -67,6 +69,7 @@
                 <div class="form-group form-inline">
                     <input type="button" value="修改" onclick="updategoods()" class="btn btn-primary" />
                     <input type="reset" value="重置" class="btn btn-default" />
+                    <input type="button" value="返回" onclick="goback()" class="btn btn-primary"/>
                 </div>
             </div>
         </div>
@@ -78,14 +81,19 @@
                 data:new FormData(document.getElementById("goodsform")),
                 url:"${pageContext.request.contextPath}/admincontroller/updateGoods",
                 success:function(a){
-                    alert(a);
                     document.getElementById("img").src="${pageContext.request.contextPath}/image/"+a;
                 },
                 processData: false,
                 contentType: false
             })
         }
+
+        function goback() {
+            location.href="${pageContext.request.contextPath}/admincontroller/goods";
+        }
     </script>
 </div>
+
+
 </body>
 </html>

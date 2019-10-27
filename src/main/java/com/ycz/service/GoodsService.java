@@ -13,4 +13,5 @@ public interface GoodsService {
 
     void updateGoods(Goods goods);
 
+    void addGoods(Goods goods);
 }

@@ -3,6 +3,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -18,6 +19,14 @@
 
 </head>
 <body>
+
+<shiro:guest>
+	<script type="text/javascript">
+		alert("请登录后再访问");
+		location.href="${pageContext.request.contextPath}/admincontroller/login";
+	</script>
+</shiro:guest>
+
 <div class="row" style="width:98%;margin-left: 1%;">
 	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 		<div class="panel panel-default" style="height: 802px">

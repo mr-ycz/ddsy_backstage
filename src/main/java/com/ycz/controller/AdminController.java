@@ -8,14 +8,12 @@ import com.ycz.service.GoodsService;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,20 +38,25 @@ public class AdminController {
     }
 
     @PostMapping("login")
-    public String loginLogic(UserVo userVo, Model model){
+    public String loginLogic(UserVo userVo, Model model, HttpServletRequest request){
         UsernamePasswordToken token = new UsernamePasswordToken(userVo.getUsername(), userVo.getPassword());
         Subject subject = SecurityUtils.getSubject();
         subject.login(token);
         User user = adminService.queryAdminByName(userVo.getUsername());
         model.addAttribute("admin", user);
 
+        String iniPath = (String) request.getSession().getAttribute("iniPath");
+
         //如果当前登录角色是admin
         if (subject.hasRole("admin")){
+            if ("/admincontroller/loadAddGoods".equals(iniPath) && iniPath!=null){
+                request.getSession().setAttribute("iniPath", null);
+                return "redirect:"+iniPath;
+            }
             return "forward:/admin/admin.jsp";
         }else if (subject.hasRole("manager")){
-            return "index";
+            return "redirect:/admincontroller/userGoods";
         }
-
         return "forward:/admin/error";
     }
 
@@ -61,6 +64,12 @@ public class AdminController {
     public String logout(){
         SecurityUtils.getSubject().logout();
         return "forward:/admin/login.jsp";
+    }
+
+    @RequestMapping("/userGoods")
+    public String userrGoods(HttpServletRequest request){
+        showGoods(request);
+        return "forward:/user/showGoods.jsp";
     }
 
     @RequestMapping("/showGoods")
@@ -96,7 +105,8 @@ public class AdminController {
 
     @RequestMapping("/updateGoods")
     @ResponseBody
-    public String updateGoods(String gid, String name, BigDecimal price, String intro, Integer typeid,  MultipartFile sources1, HttpServletRequest request) throws IOException {
+    public String updateGoods(String gid, String name, BigDecimal price, String intro, Integer typeid,
+                              MultipartFile sources1, HttpServletRequest request) throws IOException {
 
         String fileName = UUID.randomUUID().toString();
         String originalFilename = sources1.getOriginalFilename();
@@ -104,8 +114,6 @@ public class AdminController {
         String extension = FilenameUtils.getExtension(originalFilename);
         // 拼接全局唯一文件名
         String uniqueFileName = fileName+"."+extension;
-
-        System.out.println(request.getSession().getServletContext().getRealPath("/image"));
 
         String contentType = sources1.getContentType();
         if("image/jpeg".equals(contentType) || "image/png".equals(contentType) || "image/gif".equals(contentType)){
@@ -117,6 +125,38 @@ public class AdminController {
             goodsService.updateGoods(goods);
             return originalFilename;
         }
+        return null;
+    }
+
+    @RequiresAuthentication
+    @RequestMapping("/loadAddGoods")
+    public String loadAddGoods(){
+        return "forward:/admin/addGoods.jsp";
+    }
+
+    @RequestMapping("/addGoods")
+    @ResponseBody
+    public String addGoods(Goods goods, @RequestParam("sources1") MultipartFile sources1) throws IOException {
+
+        String fileName = UUID.randomUUID().toString();
+        String originalFilename = sources1.getOriginalFilename();
+
+        String extension = FilenameUtils.getExtension(originalFilename);
+        // 拼接全局唯一文件名
+        String uniqueFileName = fileName+"."+extension;
+        goods.setPicture(uniqueFileName);
+
+        String contentType = sources1.getContentType();
+        if("image/jpeg".equals(contentType) || "image/png".equals(contentType) || "image/gif".equals(contentType)){
+            String realPath = "D:\\ideaprograms\\ddsy_backstage\\src\\main\\webapp\\image";
+            sources1.transferTo(new File(realPath+File.separator+uniqueFileName));
+            String realFilePath=realPath+File.separator+uniqueFileName;
+
+            goodsService.addGoods(goods);
+            return "1";
+        }
+
+
         return null;
     }
 

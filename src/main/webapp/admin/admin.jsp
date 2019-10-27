@@ -102,7 +102,7 @@
 							</a>
 						</li>
 						<li>
-							<a href="#" id="addGoods">
+							<a href="${pageContext.request.contextPath}/admincontroller/loadAddGoods" id="addGoods">
 								<span class="glyphicon glyphicon-plus"></span>&nbsp;&nbsp;添加商品
 							</a>
 						</li>
